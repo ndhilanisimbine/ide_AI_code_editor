@@ -2,35 +2,97 @@
 import query from "./query.js";
 import ls from "./local_storage.js";
 
-const OptionState = Object.freeze({
-    TRUE: "true",
-    FALSE: "false",
-    DEFAULT: "default"
-});
-
-function parseOptionState(value) {
-    if (value == null || value === "") {
-        return OptionState.DEFAULT;
+const STYLE_OPTIONS = {
+    null: {
+        showLogo: null,
+        showFileMenu: null,
+        showHelpMenu: null,
+        showSelectLanguage: null,
+        showCompilerOptions: null,
+        showCommandLineArguments: null,
+        showRunButton: null,
+        showThemeButton: null,
+        showPuterSignInOutButton: null,
+        showStatusLine: null,
+        showCopyright: null,
+    },
+    default: {
+        showLogo: true,
+        showFileMenu: true,
+        showHelpMenu: true,
+        showSelectLanguage: true,
+        showCompilerOptions: true,
+        showCommandLineArguments: true,
+        showRunButton: true,
+        showThemeButton: true,
+        showPuterSignInOutButton: true,
+        showStatusLine: true,
+        showCopyright: true,
+    },
+    minimal: {
+        showLogo: false,
+        showFileMenu: false,
+        showHelpMenu: false,
+        showSelectLanguage: true,
+        showCompilerOptions: false,
+        showCommandLineArguments: false,
+        showRunButton: true,
+        showThemeButton: false,
+        showPuterSignInOutButton: false,
+        showStatusLine: false,
+        showCopyright: false,
+    },
+    standalone: {
+        showLogo: false,
+        showFileMenu: true,
+        showHelpMenu: true,
+        showSelectLanguage: true,
+        showCompilerOptions: true,
+        showCommandLineArguments: true,
+        showRunButton: true,
+        showThemeButton: true,
+        showPuterSignInOutButton: true,
+        showStatusLine: true,
+        showCopyright: false,
+    },
+    electron: {
+        showLogo: false,
+        showFileMenu: true,
+        showHelpMenu: true,
+        showSelectLanguage: true,
+        showCompilerOptions: true,
+        showCommandLineArguments: true,
+        showRunButton: true,
+        showThemeButton: true,
+        showPuterSignInOutButton: true,
+        showStatusLine: true,
+        showCopyright: false,
+    },
+    puter: {
+        showLogo: false,
+        showFileMenu: true,
+        showHelpMenu: true,
+        showSelectLanguage: true,
+        showCompilerOptions: true,
+        showCommandLineArguments: true,
+        showRunButton: true,
+        showThemeButton: true,
+        showPuterSignInOutButton: false,
+        showStatusLine: true,
+        showCopyright: true,
     }
-
-    if (["true", "1", "yes"].includes(value.toLowerCase())) {
-        return OptionState.TRUE;
-    }
-
-    return OptionState.FALSE;
-}
+};
 
 const configuration = {
+    STYLE_OPTIONS: STYLE_OPTIONS,
     DEFAULT: {
         theme: "system",
         style: "default",
-        styleOptions: {
-            showLogo: "default",
-        }
+        styleOptions: STYLE_OPTIONS.null
     },
     OPTIONS: {
         theme: ["system", "reverse-system", "light", "dark"],
-        style: ["default", "minimal", "standalone", "electron", "puter"]
+        style: Object.keys(STYLE_OPTIONS)
     },
     CONFIGURATION: null,
     load() {

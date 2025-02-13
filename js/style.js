@@ -6,28 +6,32 @@ import { IS_PUTER } from "./puter.js";
 const style = {
     apply(name) {
         const resolvedName = configuration.OPTIONS.style.includes(name) ? name : configuration.DEFAULT.style;
-        if (resolvedName !== "default") {
-            style.apply("default");
-            document.querySelectorAll(`.judge0-${resolvedName}-hidden`).forEach(e => {
-                e.classList.add("judge0-style-hidden");
-            });
-        } else {
-            configuration.OPTIONS.style.forEach(s => style.reverse(s));
-        }
 
-        configuration.OPTIONS.style.forEach(s => {
-            document.querySelectorAll(`.judge0-${s}-visible`).forEach(e => {
-                if (s === resolvedName) {
-                    e.classList.remove("judge0-style-hidden");
-                } else {
+        const styleOptions = configuration.STYLE_OPTIONS[resolvedName];
+        Object.keys(styleOptions).forEach(styleOption => {
+            const value = String(styleOptions[styleOption]).toLowerCase();
+            if (["false", "0"].includes(value)) {
+                document.querySelectorAll(`.judge0-${styleOption}`).forEach(e => {
                     e.classList.add("judge0-style-hidden");
-                }
-            });
+                });
+            } else {
+                document.querySelectorAll(`.judge0-${styleOption}`).forEach(e => {
+                    e.classList.remove("judge0-style-hidden");
+                });
+            }
         });
-    },
-    reverse(name) {
-        document.querySelectorAll(`.judge0-${name}-hidden`).forEach(e => {
-            e.classList.remove("judge0-style-hidden");
+
+        Object.keys(configuration.getConfig().styleOptions).forEach(styleOption => {
+            const value = String(configuration.getConfig().styleOptions[styleOption]).toLowerCase();
+            if (["false", "0"].includes(value)) {
+                document.querySelectorAll(`.judge0-${styleOption}`).forEach(e => {
+                    e.classList.add("judge0-style-hidden");
+                });
+            } else if (["true", "1"].includes(value)) {
+                document.querySelectorAll(`.judge0-${styleOption}`).forEach(e => {
+                    e.classList.remove("judge0-style-hidden");
+                });
+            }
         });
     }
 };
