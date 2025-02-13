@@ -1,6 +1,10 @@
 "use strict";
 const ls = {
     set(key, value) {
+        if (!key) {
+            return;
+        }
+
         try {
             if (value == null) {
                 ls.del(key);
@@ -16,6 +20,10 @@ const ls = {
         }
     },
     get(key) {
+        if (!key) {
+            return null;
+        }
+
         try {
             const value = localStorage.getItem(key);
             try {
@@ -28,6 +36,10 @@ const ls = {
         }
     },
     del(key) {
+        if (!key) {
+            return;
+        }
+
         try {
             localStorage.removeItem(key);
         } catch (ignorable) {

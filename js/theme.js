@@ -1,12 +1,9 @@
 "use strict";
-import query from "./query.js";
-import ls from "./local_storage.js";
+import configuration from "./configuration.js";
 
 const theme = {
-    SUPPORTED_THEMES: ["light", "dark", "system", "reverse-system"],
-    DEFAULT_THEME: "system",
     set(name, save = true) {
-        const resolvedName = theme.SUPPORTED_THEMES.includes(name) ? name : theme.get();
+        const resolvedName = configuration.OPTIONS.theme.includes(name) ? name : configuration.get().theme;
         const resolvedTheme = resolvedName === "system" ? theme.getSystemTheme() : (resolvedName === "reverse-system" ? theme.getReverseSystemTheme() : resolvedName);
         const isLight = resolvedTheme === "light";
 
@@ -56,14 +53,11 @@ const theme = {
         });
 
         if (save) {
-            ls.set("JUDGE0_THEME", resolvedName);
+            configuration.set("theme", resolvedName);
         }
     },
-    get() {
-        return ls.get("JUDGE0_THEME") || theme.DEFAULT_THEME;
-    },
     toggle() {
-        const current = theme.get();
+        const current = configuration.get().theme;
         if (current === "system") {
             if (theme.getSystemTheme() === "dark") {
                 theme.set("light");
@@ -97,7 +91,7 @@ const theme = {
         return theme.getSystemTheme() === "dark" ? "light" : "dark";
     },
     isLight() {
-        const currentTheme = theme.get();
+        const currentTheme = configuration.get().theme;
         const resolvedTheme = currentTheme === "system" ? theme.getSystemTheme() : (currentTheme === "reverse-system" ? theme.getReverseSystemTheme() : currentTheme);
         return resolvedTheme === "light";
     }
@@ -107,14 +101,14 @@ export default theme;
 
 document.addEventListener("DOMContentLoaded", function () {
     require(["vs/editor/editor.main"], function () {
-        theme.set(query.get("theme"));
+        theme.set(configuration.get().theme, false);
     });
     document.getElementById("judge0-theme-toggle-btn").addEventListener("click", theme.toggle);
 });
 
 window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
     ["system", "reverse-system"].forEach(t => {
-        if (theme.get() === t) {
+        if (configuration.get().theme === t) {
             theme.set(t, false);
         }
     });

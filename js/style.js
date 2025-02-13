@@ -1,23 +1,21 @@
 "use strict";
-import query from "./query.js";
+import configuration from "./configuration.js";
 import { IS_ELECTRON } from "./electron.js";
 import { IS_PUTER } from "./puter.js";
 
 const style = {
-    SUPPORTED_STYLES: ["default", "minimal", "standalone", "electron", "puter"],
-    DEFAULT_STYLE: "default",
     apply(name) {
-        const resolvedName = style.SUPPORTED_STYLES.includes(name) ? name : style.DEFAULT_STYLE;
+        const resolvedName = configuration.OPTIONS.style.includes(name) ? name : configuration.DEFAULT.style;
         if (resolvedName !== "default") {
             style.apply("default");
             document.querySelectorAll(`.judge0-${resolvedName}-hidden`).forEach(e => {
                 e.classList.add("judge0-style-hidden");
             });
         } else {
-            style.SUPPORTED_STYLES.forEach(s => style.reverse(s));
+            configuration.OPTIONS.style.forEach(s => style.reverse(s));
         }
 
-        style.SUPPORTED_STYLES.forEach(s => {
+        configuration.OPTIONS.style.forEach(s => {
             document.querySelectorAll(`.judge0-${s}-visible`).forEach(e => {
                 if (s === resolvedName) {
                     e.classList.remove("judge0-style-hidden");
@@ -42,6 +40,6 @@ document.addEventListener("DOMContentLoaded", function () {
     } else if (IS_PUTER) {
         style.apply("puter");
     } else {
-        style.apply(query.get("style"));
+        style.apply(configuration.get().style);
     }
 });
