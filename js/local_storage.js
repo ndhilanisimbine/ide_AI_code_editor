@@ -1,5 +1,6 @@
 "use strict";
 const ls = {
+    PREFIX: "judge0.",
     set(key, value) {
         if (!key) {
             return;
@@ -15,7 +16,7 @@ const ls = {
                 value = JSON.stringify(value);
             }
 
-            localStorage.setItem(key, value);
+            localStorage.setItem(`${ls.PREFIX}${key}`, value);
         } catch (ignorable) {
         }
     },
@@ -25,7 +26,7 @@ const ls = {
         }
 
         try {
-            const value = localStorage.getItem(key);
+            const value = localStorage.getItem(`${ls.PREFIX}${key}`);
             try {
                 return JSON.parse(value);
             } catch (ignorable) {
@@ -41,7 +42,7 @@ const ls = {
         }
 
         try {
-            localStorage.removeItem(key);
+            localStorage.removeItem(`${ls.PREFIX}${key}`);
         } catch (ignorable) {
         }
     }

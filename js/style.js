@@ -40,6 +40,6 @@ document.addEventListener("DOMContentLoaded", function () {
     } else if (IS_PUTER) {
         style.apply("puter");
     } else {
-        style.apply(configuration.get().style);
+        style.apply(configuration.getConfig().style);
     }
 });

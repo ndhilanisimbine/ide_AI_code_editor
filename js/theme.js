@@ -3,7 +3,7 @@ import configuration from "./configuration.js";
 
 const theme = {
     set(name, save = true) {
-        const resolvedName = configuration.OPTIONS.theme.includes(name) ? name : configuration.get().theme;
+        const resolvedName = configuration.OPTIONS.theme.includes(name) ? name : configuration.getConfig().theme;
         const resolvedTheme = resolvedName === "system" ? theme.getSystemTheme() : (resolvedName === "reverse-system" ? theme.getReverseSystemTheme() : resolvedName);
         const isLight = resolvedTheme === "light";
 
@@ -57,7 +57,7 @@ const theme = {
         }
     },
     toggle() {
-        const current = configuration.get().theme;
+        const current = configuration.getConfig().theme;
         if (current === "system") {
             if (theme.getSystemTheme() === "dark") {
                 theme.set("light");
@@ -91,7 +91,7 @@ const theme = {
         return theme.getSystemTheme() === "dark" ? "light" : "dark";
     },
     isLight() {
-        const currentTheme = configuration.get().theme;
+        const currentTheme = configuration.getConfig().theme;
         const resolvedTheme = currentTheme === "system" ? theme.getSystemTheme() : (currentTheme === "reverse-system" ? theme.getReverseSystemTheme() : currentTheme);
         return resolvedTheme === "light";
     }
@@ -101,14 +101,14 @@ export default theme;
 
 document.addEventListener("DOMContentLoaded", function () {
     require(["vs/editor/editor.main"], function () {
-        theme.set(configuration.get().theme, false);
+        theme.set(configuration.getConfig().theme, false);
     });
     document.getElementById("judge0-theme-toggle-btn").addEventListener("click", theme.toggle);
 });
 
 window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
     ["system", "reverse-system"].forEach(t => {
-        if (configuration.get().theme === t) {
+        if (configuration.getConfig().theme === t) {
             theme.set(t, false);
         }
     });
