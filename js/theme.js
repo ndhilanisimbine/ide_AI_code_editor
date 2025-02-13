@@ -3,7 +3,7 @@ import configuration from "./configuration.js";
 
 const theme = {
     set(name, save = true) {
-        const resolvedName = configuration.OPTIONS.theme.includes(name) ? name : configuration.getConfig().theme;
+        const resolvedName = configuration.LEGAL_VALUES.theme.includes(name) ? name : configuration.getConfig().theme;
         const resolvedTheme = resolvedName === "system" ? theme.getSystemTheme() : (resolvedName === "reverse-system" ? theme.getReverseSystemTheme() : resolvedName);
         const isLight = resolvedTheme === "light";
 

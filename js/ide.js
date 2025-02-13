@@ -1,4 +1,5 @@
 import { usePuter } from "./puter.js";
+import configuration from "./configuration.js";
 
 const API_KEY = ""; // Get yours at https://platform.sulu.sh/apis/judge0
 
@@ -65,7 +66,7 @@ var layoutConfig = {
             }
         }, {
             type: "column",
-            content: [{
+            content: [configuration.getConfig().appOptions.showAIAssistant === "true" ? {
                 type: "component",
                 height: 66,
                 componentName: "ai",
@@ -75,7 +76,7 @@ var layoutConfig = {
                 componentState: {
                     readOnly: false
                 }
-            }, {
+            } : null, {
                 type: "stack",
                 content: [
                     {
@@ -97,7 +98,7 @@ var layoutConfig = {
                             readOnly: true
                         }
                     }]
-            }]
+            }].filter(Boolean)
         }]
     }]
 };
@@ -574,75 +575,77 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             sourceEditor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, run);
 
-            monaco.languages.registerInlineCompletionsProvider('*', {
-                provideInlineCompletions: async (model, position) => {
-                    if (!puter.auth.isSignedIn() || !document.getElementById("judge0-inline-suggestions").checked) {
-                        return;
-                    }
+            if (configuration.getConfig().appOptions.showAIAssistant == "true") {
+                monaco.languages.registerInlineCompletionsProvider('*', {
+                    provideInlineCompletions: async (model, position) => {
+                        if (!puter.auth.isSignedIn() || !document.getElementById("judge0-inline-suggestions").checked) {
+                            return;
+                        }
 
-                    const textBeforeCursor = model.getValueInRange({
-                        startLineNumber: 1,
-                        startColumn: 1,
-                        endLineNumber: position.lineNumber,
-                        endColumn: position.column
-                    });
+                        const textBeforeCursor = model.getValueInRange({
+                            startLineNumber: 1,
+                            startColumn: 1,
+                            endLineNumber: position.lineNumber,
+                            endColumn: position.column
+                        });
 
-                    const textAfterCursor = model.getValueInRange({
-                        startLineNumber: position.lineNumber,
-                        startColumn: position.column,
-                        endLineNumber: model.getLineCount(),
-                        endColumn: model.getLineMaxColumn(model.getLineCount())
-                    });
+                        const textAfterCursor = model.getValueInRange({
+                            startLineNumber: position.lineNumber,
+                            startColumn: position.column,
+                            endLineNumber: model.getLineCount(),
+                            endColumn: model.getLineMaxColumn(model.getLineCount())
+                        });
 
-                    const aiResponse = await puter.ai.chat([{
-                        role: "user",
-                        content: `You are a code completion assistant. Given the following context, generate the most likely code completion.
+                        const aiResponse = await puter.ai.chat([{
+                            role: "user",
+                            content: `You are a code completion assistant. Given the following context, generate the most likely code completion.
 
-                    ### Code Before Cursor:
-                    ${textBeforeCursor}
+                        ### Code Before Cursor:
+                        ${textBeforeCursor}
 
-                    ### Code After Cursor:
-                    ${textAfterCursor}
+                        ### Code After Cursor:
+                        ${textAfterCursor}
 
-                    ### Instructions:
-                    - Predict the next logical code segment.
-                    - Ensure the suggestion is syntactically and contextually correct.
-                    - Keep the completion concise and relevant.
-                    - Do not repeat existing code.
-                    - Provide only the missing code.
-                    - **Respond with only the code, without markdown formatting.**
-                    - **Do not include triple backticks (\`\`\`) or additional explanations.**
+                        ### Instructions:
+                        - Predict the next logical code segment.
+                        - Ensure the suggestion is syntactically and contextually correct.
+                        - Keep the completion concise and relevant.
+                        - Do not repeat existing code.
+                        - Provide only the missing code.
+                        - **Respond with only the code, without markdown formatting.**
+                        - **Do not include triple backticks (\`\`\`) or additional explanations.**
 
-                    ### Completion:`.trim()
-                    }], {
-                        model: document.getElementById("judge0-chat-model-select").value,
-                    });
+                        ### Completion:`.trim()
+                        }], {
+                            model: document.getElementById("judge0-chat-model-select").value,
+                        });
 
-                    let aiResponseValue = aiResponse?.toString().trim() || "";
+                        let aiResponseValue = aiResponse?.toString().trim() || "";
 
-                    if (Array.isArray(aiResponseValue)) {
-                        aiResponseValue = aiResponseValue.map(v => v.text).join("\n").trim();
-                    }
+                        if (Array.isArray(aiResponseValue)) {
+                            aiResponseValue = aiResponseValue.map(v => v.text).join("\n").trim();
+                        }
 
-                    if (!aiResponseValue || aiResponseValue.length === 0) {
-                        return;
-                    }
+                        if (!aiResponseValue || aiResponseValue.length === 0) {
+                            return;
+                        }
 
-                    return {
-                        items: [{
-                            insertText: aiResponseValue,
-                            range: new monaco.Range(
-                                position.lineNumber,
-                                position.column,
-                                position.lineNumber,
-                                position.column
-                            )
-                        }]
-                    };
-                },
-                handleItemDidShow: () => { },
-                freeInlineCompletions: () => { }
-            });
+                        return {
+                            items: [{
+                                insertText: aiResponseValue,
+                                range: new monaco.Range(
+                                    position.lineNumber,
+                                    position.column,
+                                    position.lineNumber,
+                                    position.column
+                                )
+                            }]
+                        };
+                    },
+                    handleItemDidShow: () => { },
+                    freeInlineCompletions: () => { }
+                });
+            }
         });
 
         layout.registerComponent("stdin", function (container, state) {

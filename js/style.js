@@ -5,7 +5,7 @@ import { IS_PUTER } from "./puter.js";
 
 const style = {
     apply(name) {
-        const resolvedName = configuration.OPTIONS.style.includes(name) ? name : configuration.DEFAULT.style;
+        const resolvedName = configuration.LEGAL_VALUES.style.includes(name) ? name : configuration.DEFAULT.style;
 
         const styleOptions = configuration.STYLE_OPTIONS[resolvedName];
         Object.keys(styleOptions).forEach(styleOption => {

@@ -14,7 +14,7 @@ const STYLE_OPTIONS = {
         showThemeButton: null,
         showPuterSignInOutButton: null,
         showStatusLine: null,
-        showCopyright: null,
+        showCopyright: null
     },
     default: {
         showLogo: true,
@@ -27,7 +27,7 @@ const STYLE_OPTIONS = {
         showThemeButton: true,
         showPuterSignInOutButton: true,
         showStatusLine: true,
-        showCopyright: true,
+        showCopyright: true
     },
     minimal: {
         showLogo: false,
@@ -40,7 +40,7 @@ const STYLE_OPTIONS = {
         showThemeButton: false,
         showPuterSignInOutButton: false,
         showStatusLine: false,
-        showCopyright: false,
+        showCopyright: false
     },
     standalone: {
         showLogo: false,
@@ -53,7 +53,7 @@ const STYLE_OPTIONS = {
         showThemeButton: true,
         showPuterSignInOutButton: true,
         showStatusLine: true,
-        showCopyright: false,
+        showCopyright: false
     },
     electron: {
         showLogo: false,
@@ -66,7 +66,7 @@ const STYLE_OPTIONS = {
         showThemeButton: true,
         showPuterSignInOutButton: true,
         showStatusLine: true,
-        showCopyright: false,
+        showCopyright: false
     },
     puter: {
         showLogo: false,
@@ -79,18 +79,41 @@ const STYLE_OPTIONS = {
         showThemeButton: true,
         showPuterSignInOutButton: false,
         showStatusLine: true,
-        showCopyright: true,
+        showCopyright: true
+    }
+};
+
+const APP_OPTIONS = {
+    null: {
+        showAIAssistant: null
+    },
+    default: {
+        showAIAssistant: true
+    },
+    minimal: {
+        showAIAssistant: false
+    },
+    standalone: {
+        showAIAssistant: true
+    },
+    electron: {
+        showAIAssistant: true
+    },
+    puter: {
+        showAIAssistant: true
     }
 };
 
 const configuration = {
     STYLE_OPTIONS: STYLE_OPTIONS,
+    APP_OPTIONS: APP_OPTIONS,
     DEFAULT: {
         theme: "system",
         style: "default",
-        styleOptions: STYLE_OPTIONS.null
+        styleOptions: STYLE_OPTIONS.null,
+        appOptions: APP_OPTIONS.null
     },
-    OPTIONS: {
+    LEGAL_VALUES: {
         theme: ["system", "reverse-system", "light", "dark"],
         style: Object.keys(STYLE_OPTIONS)
     },
