@@ -66,7 +66,7 @@ var layoutConfig = {
             }
         }, {
             type: "column",
-            content: [configuration.getConfig().appOptions.showAIAssistant ? {
+            content: [configuration.get("appOptions.showAIAssistant") ? {
                 type: "component",
                 height: 66,
                 componentName: "ai",
@@ -575,7 +575,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             sourceEditor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, run);
 
-            if (configuration.getConfig().appOptions.showAIAssistant) {
+            if (configuration.get("appOptions.showAIAssistant")) {
                 monaco.languages.registerInlineCompletionsProvider('*', {
                     provideInlineCompletions: async (model, position) => {
                         if (!puter.auth.isSignedIn() || !document.getElementById("judge0-inline-suggestions").checked) {
