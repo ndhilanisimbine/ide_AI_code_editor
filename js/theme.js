@@ -3,7 +3,7 @@ import configuration from "./configuration.js";
 
 const theme = {
     set(name, save = true) {
-        const resolvedName = configuration.LEGAL_VALUES.theme.includes(name) ? name : configuration.getConfig().theme;
+        const resolvedName = configuration.set("theme", name, save);
         const resolvedTheme = resolvedName === "system" ? theme.getSystemTheme() : (resolvedName === "reverse-system" ? theme.getReverseSystemTheme() : resolvedName);
         const isLight = resolvedTheme === "light";
 
@@ -51,13 +51,9 @@ const theme = {
         document.head.querySelectorAll("meta[name='theme-color'], meta[name='msapplication-TileColor']").forEach(e => {
             e.setAttribute("content", isLight ? "#ffffff" : "#1b1c1d");
         });
-
-        if (save) {
-            configuration.set("theme", resolvedName);
-        }
     },
     toggle() {
-        const current = configuration.getConfig().theme;
+        const current = configuration.get("theme");
         if (current === "system") {
             if (theme.getSystemTheme() === "dark") {
                 theme.set("light");
@@ -91,7 +87,7 @@ const theme = {
         return theme.getSystemTheme() === "dark" ? "light" : "dark";
     },
     isLight() {
-        const currentTheme = configuration.getConfig().theme;
+        const currentTheme = configuration.get("theme");
         const resolvedTheme = currentTheme === "system" ? theme.getSystemTheme() : (currentTheme === "reverse-system" ? theme.getReverseSystemTheme() : currentTheme);
         return resolvedTheme === "light";
     }
@@ -101,14 +97,14 @@ export default theme;
 
 document.addEventListener("DOMContentLoaded", function () {
     require(["vs/editor/editor.main"], function () {
-        theme.set(configuration.getConfig().theme, false);
+        theme.set(configuration.get("theme"), false);
     });
     document.getElementById("judge0-theme-toggle-btn").addEventListener("click", theme.toggle);
 });
 
 window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
     ["system", "reverse-system"].forEach(t => {
-        if (configuration.getConfig().theme === t) {
+        if (configuration.get("theme") === t) {
             theme.set(t, false);
         }
     });

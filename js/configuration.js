@@ -2,171 +2,211 @@
 import query from "./query.js";
 import ls from "./local_storage.js";
 
-const STYLE_OPTIONS = {
-    null: {
-        showLogo: null,
-        showFileMenu: null,
-        showHelpMenu: null,
-        showSelectLanguage: null,
-        showCompilerOptions: null,
-        showCommandLineArguments: null,
-        showRunButton: null,
-        showThemeButton: null,
-        showPuterSignInOutButton: null,
-        showStatusLine: null,
-        showCopyright: null
-    },
+const DEFAULT_CONFIGURATIONS = {
     default: {
-        showLogo: true,
-        showFileMenu: true,
-        showHelpMenu: true,
-        showSelectLanguage: true,
-        showCompilerOptions: true,
-        showCommandLineArguments: true,
-        showRunButton: true,
-        showThemeButton: true,
-        showPuterSignInOutButton: true,
-        showStatusLine: true,
-        showCopyright: true
-    },
-    minimal: {
-        showLogo: false,
-        showFileMenu: false,
-        showHelpMenu: false,
-        showSelectLanguage: true,
-        showCompilerOptions: false,
-        showCommandLineArguments: false,
-        showRunButton: true,
-        showThemeButton: false,
-        showPuterSignInOutButton: false,
-        showStatusLine: false,
-        showCopyright: false
-    },
-    standalone: {
-        showLogo: false,
-        showFileMenu: true,
-        showHelpMenu: true,
-        showSelectLanguage: true,
-        showCompilerOptions: true,
-        showCommandLineArguments: true,
-        showRunButton: true,
-        showThemeButton: true,
-        showPuterSignInOutButton: true,
-        showStatusLine: true,
-        showCopyright: false
-    },
-    electron: {
-        showLogo: false,
-        showFileMenu: true,
-        showHelpMenu: true,
-        showSelectLanguage: true,
-        showCompilerOptions: true,
-        showCommandLineArguments: true,
-        showRunButton: true,
-        showThemeButton: true,
-        showPuterSignInOutButton: true,
-        showStatusLine: true,
-        showCopyright: false
-    },
-    puter: {
-        showLogo: false,
-        showFileMenu: true,
-        showHelpMenu: true,
-        showSelectLanguage: true,
-        showCompilerOptions: true,
-        showCommandLineArguments: true,
-        showRunButton: true,
-        showThemeButton: true,
-        showPuterSignInOutButton: false,
-        showStatusLine: true,
-        showCopyright: true
-    }
-};
-
-const APP_OPTIONS = {
-    null: {
-        showAIAssistant: null
-    },
-    default: {
-        showAIAssistant: true
-    },
-    minimal: {
-        showAIAssistant: false
-    },
-    standalone: {
-        showAIAssistant: true
-    },
-    electron: {
-        showAIAssistant: true
-    },
-    puter: {
-        showAIAssistant: true
-    }
-};
-
-const configuration = {
-    STYLE_OPTIONS: STYLE_OPTIONS,
-    APP_OPTIONS: APP_OPTIONS,
-    DEFAULT: {
         theme: "system",
         style: "default",
-        styleOptions: STYLE_OPTIONS.null,
-        appOptions: APP_OPTIONS.null
+        styleOptions: {
+            showLogo: true,
+            showFileMenu: true,
+            showHelpMenu: true,
+            showSelectLanguage: true,
+            showCompilerOptions: true,
+            showCommandLineArguments: true,
+            showRunButton: true,
+            showThemeButton: true,
+            showPuterSignInOutButton: true,
+            showStatusLine: true,
+            showCopyright: true
+        },
+        appOptions: {
+            showAIAssistant: true
+        }
     },
-    LEGAL_VALUES: {
-        theme: ["system", "reverse-system", "light", "dark"],
-        style: Object.keys(STYLE_OPTIONS)
+    minimal: {
+        theme: "system",
+        style: "minimal",
+        styleOptions: {
+            showLogo: false,
+            showFileMenu: false,
+            showHelpMenu: false,
+            showSelectLanguage: true,
+            showCompilerOptions: false,
+            showCommandLineArguments: false,
+            showRunButton: true,
+            showThemeButton: false,
+            showPuterSignInOutButton: false,
+            showStatusLine: false,
+            showCopyright: false
+        },
+        appOptions: {
+            showAIAssistant: false
+        }
     },
+    standalone: {
+        theme: "system",
+        style: "standalone",
+        styleOptions: {
+            showLogo: false,
+            showFileMenu: true,
+            showHelpMenu: true,
+            showSelectLanguage: true,
+            showCompilerOptions: true,
+            showCommandLineArguments: true,
+            showRunButton: true,
+            showThemeButton: true,
+            showPuterSignInOutButton: true,
+            showStatusLine: true,
+            showCopyright: false
+        },
+        appOptions: {
+            showAIAssistant: true
+        }
+    },
+    electron: {
+        theme: "system",
+        style: "electron",
+        styleOptions: {
+            showLogo: false,
+            showFileMenu: true,
+            showHelpMenu: true,
+            showSelectLanguage: true,
+            showCompilerOptions: true,
+            showCommandLineArguments: true,
+            showRunButton: true,
+            showThemeButton: true,
+            showPuterSignInOutButton: true,
+            showStatusLine: true,
+            showCopyright: false
+        },
+        appOptions: {
+            showAIAssistant: true
+        }
+    },
+    puter: {
+        theme: "system",
+        style: "puter",
+        styleOptions: {
+            showLogo: false,
+            showFileMenu: true,
+            showHelpMenu: true,
+            showSelectLanguage: true,
+            showCompilerOptions: true,
+            showCommandLineArguments: true,
+            showRunButton: true,
+            showThemeButton: true,
+            showPuterSignInOutButton: false,
+            showStatusLine: true,
+            showCopyright: true
+        },
+        appOptions: {
+            showAIAssistant: true
+        }
+    }
+};
+
+const PROXY_GET = function(obj, key) {
+    if (!key) {
+        return null;
+    }
+
+    for (const k of key.split(".")) {
+        obj = obj[k];
+        if (!obj) {
+            break;
+        }
+    }
+
+    return obj;
+};
+
+const PROXT_SET = function(obj, key, val) {
+    if (!key) {
+        return false;
+    }
+
+    const keys = key.split(".");
+    const lastKey = keys[keys.length - 1];
+
+    for (let i = 0; i < keys.length - 1; i++) {
+        if (!obj[keys[i]]) {
+            obj[keys[i]] = {};
+        }
+        obj = obj[keys[i]];
+    }
+
+    obj[lastKey] = val;
+
+    return true;
+};
+
+const PROXY_HANDLER = {
+    get: PROXY_GET,
+    set: PROXT_SET
+};
+
+const LEGAL_VALUES = new Proxy({
+    theme: ["system", "reverse-system", "light", "dark"],
+    style: Object.keys(DEFAULT_CONFIGURATIONS)
+}, PROXY_HANDLER);
+
+const configuration = {
     CONFIGURATION: null,
+    LOADED_CONFIGURATION: null,
     load() {
+        configuration.getConfig();
+    },
+    getConfig() {
         if (!configuration.CONFIGURATION) {
-            configuration.CONFIGURATION = JSON.parse(JSON.stringify(configuration.DEFAULT));
-            for (const key of configuration.getKeys()) {
-                const val = query.get(`${ls.PREFIX}${key}`) || ls.get(key);
-                if (val) {
-                    configuration.set(key, val, false);
+            configuration.CONFIGURATION = new Proxy(JSON.parse(JSON.stringify(DEFAULT_CONFIGURATIONS.default)), {
+                get: PROXY_GET,
+                set: function(obj, key, val) {
+                    if (LEGAL_VALUES[key] && !LEGAL_VALUES[key].includes(val)) {
+                        return true;
+                    }
+
+                    if (PROXY_GET(obj, key) === val) {
+                        return true;
+                    }
+
+                    PROXT_SET(obj, key, val);
+
+                    if (key === "style") {
+                        obj.styleOptions = DEFAULT_CONFIGURATIONS[val].styleOptions;
+                        obj.appOptions = DEFAULT_CONFIGURATIONS[val].appOptions;
+                        configuration.merge(configuration.getConfig(), configuration.getLoadedConfig());
+                    }
+
+                    return true;
                 }
-            }
+            });
+            configuration.merge(configuration.CONFIGURATION, configuration.getLoadedConfig());
         }
         return configuration.CONFIGURATION;
     },
-    getConfig() {
-        return configuration.load();
+    getLoadedConfig() {
+        if (!configuration.LOADED_CONFIGURATION) {
+            configuration.LOADED_CONFIGURATION = new Proxy({}, PROXY_HANDLER);
+            for (const key of configuration.getKeys(DEFAULT_CONFIGURATIONS.default)) {
+                const val = query.get(`${ls.PREFIX}${key}`) || ls.get(key);
+                if (val) {
+                    configuration.LOADED_CONFIGURATION[key] = val;
+                }
+            }
+        }
+        return configuration.LOADED_CONFIGURATION;
     },
     get(key) {
-        if (!key) {
-            return null;
-        }
-
-        let config = configuration.getConfig();
-        for (const k of key.split(".")) {
-            config = config[k];
-            if (!config) {
-                break;
-            }
-        }
-
-        return config || ls.get(key);
+        const config = configuration.getConfig();
+        return config[key] || ls.get(key);
     },
-    set(key, val, save = true) {
-        if (!key) {
-            return;
-        }
-
-        let config = configuration.getConfig();
-
-        const keys = key.split(".");
-        for (let i = 0; i < keys.length - 1; i++) {
-            if (!config[keys[i]]) {
-                config[keys[i]] = {};
-            }
-            config = config[keys[i]];
-        }
-        config[keys[keys.length - 1]] = val;
-
+    set(key, val, save = false) {
+        const config = configuration.getConfig();
+        config[key] = val;
         if (save) {
-            ls.set(key, val);
+            ls.set(key, config[key]);
         }
+        return config[key];
     },
     getKeys(obj = configuration.getConfig(), prefix = "") {
         return Object.keys(obj).flatMap(key => {
@@ -176,6 +216,19 @@ const configuration = {
             }
             return fullKey;
         });
+    },
+    merge(dest, src) {
+        for (const key of configuration.getKeys(src)) {
+            const val = src[key];
+            const valStr = String(val || "").toLowerCase();
+            if (["true", "on", "yes"].includes(valStr)) {
+                dest[key] = true;
+            } else if (["false", "off", "no"].includes(valStr)) {
+                dest[key] = false;
+            } else {
+                dest[key] = val;
+            }
+        }
     }
 };
 
