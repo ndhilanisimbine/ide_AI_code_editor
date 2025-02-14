@@ -20,7 +20,8 @@ const DEFAULT_CONFIGURATIONS = {
             showCopyright: true
         },
         appOptions: {
-            showAIAssistant: true
+            showAIAssistant: true,
+            ioLayout: "stack"
         }
     },
     minimal: {
@@ -40,7 +41,8 @@ const DEFAULT_CONFIGURATIONS = {
             showCopyright: false
         },
         appOptions: {
-            showAIAssistant: false
+            showAIAssistant: false,
+            ioLayout: "column"
         }
     },
     standalone: {
@@ -60,7 +62,8 @@ const DEFAULT_CONFIGURATIONS = {
             showCopyright: false
         },
         appOptions: {
-            showAIAssistant: true
+            showAIAssistant: true,
+            ioLayout: "stack"
         }
     },
     electron: {
@@ -80,7 +83,8 @@ const DEFAULT_CONFIGURATIONS = {
             showCopyright: false
         },
         appOptions: {
-            showAIAssistant: true
+            showAIAssistant: true,
+            ioLayout: "stack"
         }
     },
     puter: {
@@ -100,7 +104,8 @@ const DEFAULT_CONFIGURATIONS = {
             showCopyright: true
         },
         appOptions: {
-            showAIAssistant: true
+            showAIAssistant: true,
+            ioLayout: "stack"
         }
     }
 };
@@ -147,7 +152,10 @@ const PROXY_HANDLER = {
 
 const LEGAL_VALUES = new Proxy({
     theme: ["system", "reverse-system", "light", "dark"],
-    style: Object.keys(DEFAULT_CONFIGURATIONS)
+    style: Object.keys(DEFAULT_CONFIGURATIONS),
+    appOptions: {
+        ioLayout: ["stack", "row", "column"]
+    }
 }, PROXY_HANDLER);
 
 const configuration = {

@@ -77,7 +77,7 @@ var layoutConfig = {
                     readOnly: false
                 }
             } : null, {
-                type: "stack",
+                type: configuration.get("appOptions.ioLayout"),
                 content: [
                     {
                         type: "component",
