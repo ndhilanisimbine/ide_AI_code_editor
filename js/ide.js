@@ -748,6 +748,8 @@ document.addEventListener("DOMContentLoaded", async function () {
             if (e.data.api_key) {
                 AUTH_HEADERS["Authorization"] = `Bearer ${e.data.api_key}`;
             }
+        } else if (e.data.action === "run") {
+            run();
         }
     };
 });

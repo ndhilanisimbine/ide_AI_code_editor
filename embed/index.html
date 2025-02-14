@@ -1,10 +1,11 @@
 <body>
     <p>The source code for this example is available <a href="https://github.com/judge0/ide/tree/master/embed" target="_blank">here</a>.</p>
 
-    <iframe id="judge0-ide" src="https://ide.judge0.com?judge0.style=minimal&judge0.theme=dark" frameborder="0" width="80%" height="300px"></iframe>
+    <iframe id="judge0-ide" src="https://ide.judge0.com?judge0.style=minimal&judge0.theme=dark&judge0.styleOptions.showNavigation=false" frameborder="0" width="80%" height="300px"></iframe>
 
     <hr />
     <button onclick="getDataFromJudge0IDE()">Get Data</button>
+    <button onclick="runCodeInsideJudge0IDE()">Run Code</button>
     <pre id="judge0-ide-data-viewer" style="padding: 1rem; background-color: #eee;"></pre>
 
     <script>
@@ -43,6 +44,10 @@
 
         function getDataFromJudge0IDE() {
             judge0IDE.contentWindow.postMessage({action: "get"}, '*');
+        }
+
+        function runCodeInsideJudge0IDE() {
+            judge0IDE.contentWindow.postMessage({action: "run"}, '*');
         }
     </script>
 </body>

@@ -17,7 +17,8 @@ const DEFAULT_CONFIGURATIONS = {
             showThemeButton: true,
             showPuterSignInOutButton: true,
             showStatusLine: true,
-            showCopyright: true
+            showCopyright: true,
+            showNavigation: true
         },
         appOptions: {
             showAIAssistant: true,
@@ -42,7 +43,8 @@ const DEFAULT_CONFIGURATIONS = {
             showThemeButton: false,
             showPuterSignInOutButton: false,
             showStatusLine: false,
-            showCopyright: false
+            showCopyright: false,
+            showNavigation: true
         },
         appOptions: {
             showAIAssistant: false,
@@ -67,7 +69,8 @@ const DEFAULT_CONFIGURATIONS = {
             showThemeButton: true,
             showPuterSignInOutButton: true,
             showStatusLine: true,
-            showCopyright: false
+            showCopyright: false,
+            showNavigation: true
         },
         appOptions: {
             showAIAssistant: true,
@@ -92,7 +95,8 @@ const DEFAULT_CONFIGURATIONS = {
             showThemeButton: true,
             showPuterSignInOutButton: true,
             showStatusLine: true,
-            showCopyright: false
+            showCopyright: false,
+            showNavigation: true
         },
         appOptions: {
             showAIAssistant: true,
@@ -117,7 +121,8 @@ const DEFAULT_CONFIGURATIONS = {
             showThemeButton: true,
             showPuterSignInOutButton: false,
             showStatusLine: true,
-            showCopyright: true
+            showCopyright: true,
+            showNavigation: true
         },
         appOptions: {
             showAIAssistant: true,
