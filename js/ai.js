@@ -1,5 +1,6 @@
 "use strict";
 import theme from "./theme.js";
+import configuration from "./configuration.js";
 import { sourceEditor } from "./ide.js";
 
 const THREAD = [
@@ -124,6 +125,9 @@ document.addEventListener("keydown", function (e) {
     if (e.metaKey || e.ctrlKey) {
         switch (e.key) {
             case "p":
+                if (!configuration.get("appOptions.showAIAssistant")) {
+                    break;
+                }
                 e.preventDefault();
                 document.getElementById("judge0-chat-user-input").focus();
                 break;
