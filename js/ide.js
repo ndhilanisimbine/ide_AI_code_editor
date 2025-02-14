@@ -53,7 +53,7 @@ var layoutConfig = {
         reorderEnabled: true
     },
     content: [{
-        type: "row",
+        type: configuration.get("appOptions.mainLayout"),
         content: [{
             type: "component",
             width: 66,
@@ -65,7 +65,8 @@ var layoutConfig = {
                 readOnly: false
             }
         }, {
-            type: "column",
+            type: configuration.get("appOptions.assistantLayout"),
+            title: "AI Assistant and I/O",
             content: [configuration.get("appOptions.showAIAssistant") ? {
                 type: "component",
                 height: 66,
@@ -78,6 +79,7 @@ var layoutConfig = {
                 }
             } : null, {
                 type: configuration.get("appOptions.ioLayout"),
+                title: "I/O",
                 content: [
                     {
                         type: "component",
