@@ -81,7 +81,7 @@ var layoutConfig = {
                 type: configuration.get("appOptions.ioLayout"),
                 title: "I/O",
                 content: [
-                    {
+                    configuration.get("appOptions.showInput") ? {
                         type: "component",
                         componentName: "stdin",
                         id: "stdin",
@@ -90,7 +90,7 @@ var layoutConfig = {
                         componentState: {
                             readOnly: false
                         }
-                    }, {
+                    } : null, configuration.get("appOptions.showOutput") ? {
                         type: "component",
                         componentName: "stdout",
                         id: "stdout",
@@ -99,7 +99,7 @@ var layoutConfig = {
                         componentState: {
                             readOnly: true
                         }
-                    }]
+                    } : null].filter(Boolean)
             }].filter(Boolean)
         }]
     }]

@@ -23,7 +23,9 @@ const DEFAULT_CONFIGURATIONS = {
             showAIAssistant: true,
             ioLayout: "stack",
             assistantLayout: "column",
-            mainLayout: "row"
+            mainLayout: "row",
+            showInput: true,
+            showOutput: true
         }
     },
     minimal: {
@@ -46,7 +48,9 @@ const DEFAULT_CONFIGURATIONS = {
             showAIAssistant: false,
             ioLayout: "column",
             assistantLayout: "column",
-            mainLayout: "row"
+            mainLayout: "row",
+            showInput: true,
+            showOutput: true
         }
     },
     standalone: {
@@ -69,7 +73,9 @@ const DEFAULT_CONFIGURATIONS = {
             showAIAssistant: true,
             ioLayout: "stack",
             assistantLayout: "column",
-            mainLayout: "row"
+            mainLayout: "row",
+            showInput: true,
+            showOutput: true
         }
     },
     electron: {
@@ -92,7 +98,9 @@ const DEFAULT_CONFIGURATIONS = {
             showAIAssistant: true,
             ioLayout: "stack",
             assistantLayout: "column",
-            mainLayout: "row"
+            mainLayout: "row",
+            showInput: true,
+            showOutput: true
         }
     },
     puter: {
@@ -115,7 +123,9 @@ const DEFAULT_CONFIGURATIONS = {
             showAIAssistant: true,
             ioLayout: "stack",
             assistantLayout: "column",
-            mainLayout: "row"
+            mainLayout: "row",
+            showInput: true,
+            showOutput: true
         }
     }
 };
