@@ -1,6 +1,10 @@
 import { usePuter } from "./puter.js";
 import configuration from "./configuration.js";
 
+console.log("✅ ide.js is running!");
+
+
+
 const API_KEY = ""; // Get yours at https://platform.sulu.sh/apis/judge0
 
 const AUTH_HEADERS = API_KEY ? {
@@ -47,7 +51,7 @@ var timeStart;
 var sqliteAdditionalFiles;
 var languages = {};
 
-var layoutConfig = {
+window.layoutConfig = {
     settings: {
         showPopoutIcon: false,
         reorderEnabled: true
@@ -67,43 +71,59 @@ var layoutConfig = {
         }, {
             type: configuration.get("appOptions.assistantLayout"),
             title: "AI Assistant and I/O",
-            content: [configuration.get("appOptions.showAIAssistant") ? {
-                type: "component",
-                height: 66,
-                componentName: "ai",
-                id: "ai",
-                title: "AI Assistant",
-                isClosable: false,
-                componentState: {
-                    readOnly: false
+            content: [
+                configuration.get("appOptions.showAIAssistant") ? {
+                    type: "component",
+                    height: 66,
+                    componentName: "ai",
+                    id: "ai",
+                    title: "AI Assistant",
+                    isClosable: false,
+                    componentState: {
+                        readOnly: false
+                    }
+                } : null,
+                {
+                    type: "component",
+                    componentName: "chat",
+                    id: "chat",
+                    title: "Chat AI Assistant",
+                    isClosable: false,
+                    componentState: {
+                        readOnly: false
+                    }
+                },
+                {
+                    type: configuration.get("appOptions.ioLayout"),
+                    title: "I/O",
+                    content: [
+                        configuration.get("appOptions.showInput") ? {
+                            type: "component",
+                            componentName: "stdin",
+                            id: "stdin",
+                            title: "Input",
+                            isClosable: false,
+                            componentState: {
+                                readOnly: false
+                            }
+                        } : null,
+                        configuration.get("appOptions.showOutput") ? {
+                            type: "component",
+                            componentName: "stdout",
+                            id: "stdout",
+                            title: "Output",
+                            isClosable: false,
+                            componentState: {
+                                readOnly: true
+                            }
+                        } : null
+                    ].filter(Boolean)
                 }
-            } : null, {
-                type: configuration.get("appOptions.ioLayout"),
-                title: "I/O",
-                content: [
-                    configuration.get("appOptions.showInput") ? {
-                        type: "component",
-                        componentName: "stdin",
-                        id: "stdin",
-                        title: "Input",
-                        isClosable: false,
-                        componentState: {
-                            readOnly: false
-                        }
-                    } : null, configuration.get("appOptions.showOutput") ? {
-                        type: "component",
-                        componentName: "stdout",
-                        id: "stdout",
-                        title: "Output",
-                        isClosable: false,
-                        componentState: {
-                            readOnly: true
-                        }
-                    } : null].filter(Boolean)
-            }].filter(Boolean)
+            ].filter(Boolean)
         }]
     }]
 };
+
 
 var gPuterFile;
 
@@ -139,16 +159,29 @@ function showError(title, content) {
 function showHttpError(jqXHR) {
     showError(`${jqXHR.statusText} (${jqXHR.status})`, `<pre>${JSON.stringify(jqXHR, null, 4)}</pre>`);
 }
-
-function handleRunError(jqXHR) {
+////
+async function handleRunError(jqXHR) {
     showHttpError(jqXHR);
     $runBtn.removeClass("loading");
 
-    window.top.postMessage(JSON.parse(JSON.stringify({
-        event: "runError",
-        data: jqXHR
-    })), "*");
+    let errorMessage = jqXHR.responseJSON?.message || "Compilation error detected, but no details found.";
+    
+    // Sending error message to AI for suggestions
+    let aiSuggestion = await getAIResponse(`This code failed to compile. Error: ${errorMessage}. How can I fix it?`);
+
+    // Displaying error & AI response in chat
+    let chatBox = document.querySelector("#chat-messages");
+    let errorDiv = document.createElement("div");
+    errorDiv.textContent = `⚠ Compilation Error: ${errorMessage}`;
+    chatBox.appendChild(errorDiv);
+
+    let aiDiv = document.createElement("div");
+    aiDiv.textContent = `🤖 AI Suggestion: ${aiSuggestion}`;
+    chatBox.appendChild(aiDiv);
 }
+
+
+/////
 
 function handleResult(data) {
     const tat = Math.round(performance.now() - timeStart);
@@ -163,6 +196,9 @@ function handleResult(data) {
     $statusLine.html(`${status.description}, ${time}, ${memory} (TAT: ${tat}ms)`);
 
     const output = [compileOutput, stdout].join("\n").trim();
+
+
+    
 
     stdoutEditor.setValue(output);
 
@@ -560,10 +596,117 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
     });
 
+
+    ////
+
     require(["vs/editor/editor.main"], function (ignorable) {
         layout = new GoldenLayout(layoutConfig, $("#judge0-site-content"));
 
         layout.registerComponent("source", function (container, state) {
+            layout.registerComponent("chat", function (container, state) {
+                container.getElement()[0].innerHTML = `
+                    <div style="
+                        padding: 10px;
+                        background: #1E1E1E;
+                        color: white;
+                        font-family: Arial, sans-serif;
+                        height: 100%;
+                        display: flex;
+                        flex-direction: column;
+                    ">
+                        <div style="flex: 1; overflow-y: auto; padding-bottom: 10px;" id="chat-messages">
+                            <p style="color: gray;">Ask about the code...</p>
+                        </div>
+                        <input type="text" id="chat-input" placeholder="Ask AI..." style="
+                            width: 100%;
+                            padding: 8px;
+                            border: none;
+                            border-radius: 4px;
+                            background: #333;
+                            color: white;
+                            font-size: 14px;
+                        ">
+                    </div>
+                `;
+            
+                let input = container.getElement()[0].querySelector("#chat-input");
+                let messages = container.getElement()[0].querySelector("#chat-messages");
+            
+                // MODIFY THIS EVENT LISTENER
+                input.addEventListener("keydown", async function (e) {
+                    if (e.key === "Enter") {
+                        let userMessage = input.value.trim();
+                        if (userMessage) {
+                            let messageDiv = document.createElement("div");
+                            messageDiv.textContent = `You: ${userMessage}`;
+                            messages.appendChild(messageDiv);
+                            input.value = "";
+            
+                            // Fetch AI response
+                            let aiResponse = await getAIResponse(userMessage);
+            
+                            // Display AI response
+                            let aiMessageDiv = document.createElement("div");
+                            aiMessageDiv.textContent = `AI: ${aiResponse}`;
+                            messages.appendChild(aiMessageDiv);
+            
+                            messages.scrollTop = messages.scrollHeight;
+                        }
+                    }
+                });
+            });
+
+
+
+///// 
+
+async function getAIResponse(userMessage, isError = false, userCode = "") {
+    const apiKey = "API Key "; // Your actual API Key
+    const apiUrl = "https://api.openai.com/v1/chat/completions";
+
+    try {
+        const response = await fetch(apiUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${apiKey}`
+            },
+            body: JSON.stringify({
+                model: "gpt-4", // or "gpt-3.5-turbo" if needed
+                messages: [
+                    {
+                        role: "system",
+                        content: isError
+                            ? "You are an AI code debugger. The user has a compilation error in their code. Analyze the error message and the code, then suggest a fix."
+                            : "You are a helpful AI assistant for coding."
+                    },
+                    ...(isError ? [{ role: "user", content: `Error message: ${userMessage}\n\nHere is my code:\n${userCode}` }] : []),
+                    { role: "user", content: userMessage }
+                ],
+                max_tokens: 200
+            })
+        });
+
+        const data = await response.json();
+        return data.choices?.[0]?.message?.content || "I couldn't generate a response.";
+    } catch (error) {
+        console.error("Error fetching AI response:", error);
+        return "Error: Unable to connect to AI service.";
+    }
+}
+
+            
+
+
+
+////
+
+
+
+
+
+
+            
             sourceEditor = monaco.editor.create(container.getElement()[0], {
                 automaticLayout: true,
                 scrollBeyondLastLine: true,
@@ -941,3 +1084,5 @@ const EXTENSIONS_TABLE = {
 function getLanguageForExtension(extension) {
     return EXTENSIONS_TABLE[extension] || { "flavor": CE, "language_id": 43 }; // Plain Text (https://ce.judge0.com/languages/43)
 }
+
+console.log("✅ layoutConfig is now global:", window.layoutConfig);
